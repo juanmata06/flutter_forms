@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:flutter_forms/presentation/blocs/register_form_cubit/register_form_cubit.dart';
 import '../widgets/widgets_export.dart';
 
 class FormScreen extends StatefulWidget {
@@ -15,7 +18,10 @@ class _FormScreenState extends State<FormScreen> {
       appBar: AppBar(
         title: const Text('Formulario'),
       ),
-      body: const _FormView(),
+      body: BlocProvider(
+        create: (context) => RegisterFormCubit(),
+        child: const _FormView()
+      ),
     );
   }
 }
@@ -50,12 +56,11 @@ class _Form extends StatefulWidget {
 
 class _FormState extends State<_Form> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String username = '';
-  String email = '';
-  String password = '';
 
   @override
   Widget build(BuildContext context) {
+    final formCubit = context.watch<RegisterFormCubit>();
+
     return Form(
       key: _formKey,
       child: Column(
@@ -63,7 +68,10 @@ class _FormState extends State<_Form> {
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Username',
-            onChanged: (value) => username = value!,
+            onChanged: (value) {
+              formCubit.usernameChanged(value!);
+              _formKey.currentState?.validate();
+            },
             validator: (value) {
               if(value == null || value.isEmpty) return 'Required field';
               if(value.trim().isEmpty) return 'Required field';
@@ -74,7 +82,10 @@ class _FormState extends State<_Form> {
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Email',
-            onChanged: (value) => username = value!,
+            onChanged: (value) {
+              formCubit.emailChanged(value!);
+              _formKey.currentState?.validate();
+            },
             validator: (value) {
               if(value == null || value.isEmpty) return 'Required field';
               if(value.trim().isEmpty) return 'Required field';
@@ -88,7 +99,10 @@ class _FormState extends State<_Form> {
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Password',
-            onChanged: (value) => password = value!,
+            onChanged: (value) {
+              formCubit.passwordChanged(value!);
+              _formKey.currentState?.validate();
+            },
             validator: (value) {
               if(value == null || value.isEmpty) return 'Required field';
               if(value.trim().isEmpty) return 'Required field';
@@ -102,8 +116,7 @@ class _FormState extends State<_Form> {
             onPressed: () {
               final isFormValid = _formKey.currentState!.validate();
               if(!isFormValid) return;
-
-              print('$username, $password');
+              formCubit.onSubmit();
             }, 
             icon: Icon(Icons.save),
             label: Text('Submit')
