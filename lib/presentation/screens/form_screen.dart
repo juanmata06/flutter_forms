@@ -47,77 +47,41 @@ class _FormView extends StatelessWidget {
   }
 }
 
-class _Form extends StatefulWidget {
+class _Form extends StatelessWidget {
   const _Form();
-
-  @override
-  State<_Form> createState() => _FormState();
-}
-
-class _FormState extends State<_Form> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final formCubit = context.watch<RegisterFormCubit>();
+    final usernameState = formCubit.state.username;
+    final emailState = formCubit.state.email;
+    final passwordState = formCubit.state.password;
 
     return Form(
-      key: _formKey,
       child: Column(
         children: [
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Username',
-            onChanged: (value) {
-              formCubit.usernameChanged(value!);
-              _formKey.currentState?.validate();
-            },
-            validator: (value) {
-              if(value == null || value.isEmpty) return 'Required field';
-              if(value.trim().isEmpty) return 'Required field';
-              if(value.length < 4) return 'Min 4 characters';
-              return null;
-            },
+            onChanged: (value) => formCubit.usernameChanged(value!),
+            errorText: usernameState.errorText
           ),
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Email',
-            onChanged: (value) {
-              formCubit.emailChanged(value!);
-              _formKey.currentState?.validate();
-            },
-            validator: (value) {
-              if(value == null || value.isEmpty) return 'Required field';
-              if(value.trim().isEmpty) return 'Required field';
-              final emailRegExp = RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              );
-              if(!emailRegExp.hasMatch(value)) return 'Email format invalid';
-              return null;
-            },
+            onChanged: (value) => formCubit.emailChanged(value!),
+            errorText: emailState.errorText
           ),
           SizedBox(height: 20),
           CustomTextFormField(
             label: 'Password',
-            onChanged: (value) {
-              formCubit.passwordChanged(value!);
-              _formKey.currentState?.validate();
-            },
-            validator: (value) {
-              if(value == null || value.isEmpty) return 'Required field';
-              if(value.trim().isEmpty) return 'Required field';
-              if(value.length < 4) return 'Min 4 characters';
-              return null;
-            },
             obscureText: true,
+            onChanged: (value) => formCubit.passwordChanged(value!),
+            errorText: passwordState.errorText
           ),
           SizedBox(height: 20),
           FilledButton.tonalIcon(
-            onPressed: () {
-              final isFormValid = _formKey.currentState!.validate();
-              if(!isFormValid) return;
-              formCubit.onSubmit();
-            }, 
+            onPressed: () => formCubit.onSubmit(),
             icon: Icon(Icons.save),
             label: Text('Submit')
           ),

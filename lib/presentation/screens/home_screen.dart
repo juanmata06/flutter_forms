@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
             child: Divider(),
           ),
           ListTile(
-            title: const Text('Formulario'),
+            title: const Text('Formularios'),
             subtitle: const Text('Manejo de formularios'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => context.push('/form'),
